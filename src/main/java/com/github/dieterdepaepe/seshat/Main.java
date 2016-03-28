@@ -1,6 +1,8 @@
 package com.github.dieterdepaepe.seshat;
 
 import com.github.dieterdepaepe.seshat.controller.TemplateController;
+import com.github.dieterdepaepe.seshat.model.TemplateRepository;
+import com.github.dieterdepaepe.seshat.model.mongo.MongoTemplateRepository;
 import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
@@ -26,7 +28,8 @@ public class Main extends AbstractVerticle{
 
         MongoClient mongo = MongoClient.createShared(vertx,
                 new JsonObject().put("connection_string", MONGO_CONN_STRING));
-        TemplateController templates = new TemplateController(mongo);
+        TemplateRepository templateRepository = new MongoTemplateRepository(mongo);
+        TemplateController templates = new TemplateController(templateRepository);
         router.get("/templates").handler(templates::listTemplates);
         router.get("/templates/:templateID").handler(templates::getTemplate);
         router.post("/templates").handler(templates::addTemplate);
